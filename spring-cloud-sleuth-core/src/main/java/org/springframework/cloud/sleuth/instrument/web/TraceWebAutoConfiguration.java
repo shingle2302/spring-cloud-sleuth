@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.ANY)
 @ConditionalOnBean(Tracing.class)
 @AutoConfigureAfter(TraceHttpAutoConfiguration.class)
+@EnableConfigurationProperties(SleuthWebProperties.class)
 public class TraceWebAutoConfiguration {
 
 	@Configuration
@@ -69,7 +70,7 @@ public class TraceWebAutoConfiguration {
 		}
 
 		/**
-		 * Sets or appends {@link ManagementServerProperties#getContextPath()} to the skip
+		 * Sets or appends {@link ManagementServerProperties#getServlet()#getContextPath()} to the skip
 		 * pattern. If neither is available then sets the default one
 		 */
 		static Pattern getPatternForManagementServerProperties(
@@ -77,13 +78,13 @@ public class TraceWebAutoConfiguration {
 				SleuthWebProperties sleuthWebProperties) {
 			String skipPattern = sleuthWebProperties.getSkipPattern();
 			if (StringUtils.hasText(skipPattern)
-					&& StringUtils.hasText(managementServerProperties.getContextPath())) {
+					&& StringUtils.hasText(managementServerProperties.getServlet().getContextPath())) {
 				return Pattern.compile(skipPattern + "|"
-						+ managementServerProperties.getContextPath() + ".*");
+						+ managementServerProperties.getServlet().getContextPath() + ".*");
 			}
-			else if (StringUtils.hasText(managementServerProperties.getContextPath())) {
+			else if (StringUtils.hasText(managementServerProperties.getServlet().getContextPath())) {
 				return Pattern
-						.compile(managementServerProperties.getContextPath() + ".*");
+						.compile(managementServerProperties.getServlet().getContextPath() + ".*");
 			}
 			return defaultSkipPattern(skipPattern);
 		}
